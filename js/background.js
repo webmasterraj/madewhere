@@ -90,27 +90,76 @@ async function getCountry(asin, host)
 }
 
 // For testing to see if the code can get country of origin from different sections of each website
-// Uncomment and run to see results in console
-// (async () => 
-// {
-	// console.log(".com china", "B081H3Y5NW", await getCountry("B081H3Y5NW", "www.amazon.com")); 
-	// await chrome.storage.local.clear();
-	// console.log(".in vietnam", "B081H3Y5NW", await getCountry("B081H3Y5NW", "www.amazon.in"));
-
-	// console.log(".com detailBullets", "B01B0ADMP8", await getCountry("B01B0ADMP8"));
-	// console.log(".com techSpecs", "B08SBQXJQB", await getCountry("B08SBQXJQB"));
-	// console.log(".com productDetails", "B0B9H8CCSL", await getCountry("B0B9H8CCSL"));
-
-	
-	// console.log(".in detailBullets", "B007RM3010", await getCountry("B007RM3010"));
-	// console.log(".in techSpecs", "B0C811KLKZ", await getCountry("B0C811KLKZ"));
-	// console.log(".in productDetails", "",await getCountry(""));
-
-	
-	// console.log(".ca detailBullets", "B07W7XK55Q", await getCountry("B07W7XK55Q"));
-	// console.log(".ca techSpecs", "", await getCountry(""));
-	// console.log(".ca productDetails", "B005W2BVMM", await getCountry("B005W2BVMM"));
-// })();
+(async () => {
+    console.log("🧪 Starting Country Detection Tests");
+    console.log("==================================");
+    
+    const testCases = [
+        {
+            asin: "B081H3Y5NW",
+            description: "Product showing different countries on different sites",
+            expectedResults: {
+                "www.amazon.com": "China",
+                "www.amazon.in": "Vietnam"
+            }
+        },
+        {
+            asin: "B01B0ADMP8",
+            description: "Product with country in detailBullets",
+            expectedResults: {
+                "www.amazon.com": "USA"
+            }
+        },
+        {
+            asin: "B007RM3010",
+            description: "Product with country in detailBullets on .in",
+            expectedResults: {
+                "www.amazon.in": "United Kingdom"
+            }
+        },
+        {
+            asin: "B0C811KLKZ",
+            description: "Product with country in techSpecs on .in",
+            expectedResults: {
+                "www.amazon.in": "India"
+            }
+        }
+    ];
+    
+    let totalTests = 0;
+    let passedTests = 0;
+    
+    for (const testCase of testCases) {
+        console.log(`\n📦 Testing ${testCase.asin}: ${testCase.description}`);
+        
+        for (const [site, expectedCountry] of Object.entries(testCase.expectedResults)) {
+            totalTests++;
+            
+            // Clear storage only for this ASIN
+            await CSRemove(testCase.asin);
+            
+            // Run test
+            const result = await getCountry(testCase.asin, site);
+            const actualCountry = result?.country?.name;
+            
+            // Compare result
+            const passed = actualCountry === expectedCountry;
+            passedTests += passed ? 1 : 0;
+            
+            // Log result with emoji and colors
+            console.log(
+                `   ${site}: ${passed ? '✅' : '❌'} ` +
+                `Expected: ${expectedCountry}, ` +
+                `Got: ${actualCountry || 'undefined'}`
+            );
+        }
+    }
+    
+    // Print summary
+    console.log("\n📊 Test Summary");
+    console.log("==============");
+    console.log(`Passed: ${passedTests}/${totalTests} (${Math.round(passedTests/totalTests*100)}%)`);
+})();
 
 const contentScript = {
 	id: 'amazonFlags',
