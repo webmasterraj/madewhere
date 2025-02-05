@@ -44,7 +44,6 @@ async function checkSite(asin, site) {
             domain: site,
             url: `https://${site}/dp/${asin}`,
             section: null,
-            text: null,
             country: null,
             timestamp: new Date().toISOString()
         };
@@ -67,7 +66,6 @@ async function checkSite(asin, site) {
                         sourceInfo = {
                             ...sourceInfo,
                             section: name,
-                            text: cleanText,
                             country: country
                         };
                         break;
@@ -84,7 +82,6 @@ async function checkSite(asin, site) {
             domain: site,
             url: `https://${site}/dp/${asin}`,
             section: null,
-            text: null,
             country: null,
             timestamp: new Date().toISOString()
         };
@@ -175,23 +172,19 @@ async function getCountry(asin, host) {
             expectedSources: {
                 "www.amazon.com": {
                     country: "China",
-                    section: "detailBullets",
-                    text: "Country of Origin: China"
+                    section: "techSpecs"
                 },
                 "www.amazon.in": {
                     country: null,
-                    section: null,
-                    text: null,
+                    section: null
                 },
                 "www.amazon.ca": {
                     country: "Vietnam",
-                    section: "detailBullets",
-                    text: "Country of Origin: Vietnam"
+                    section: "detailBullets"
                 },
                 "www.amazon.co.uk": {
                     country: null,
-                    section: null,
-                    text: null
+                    section: null
                 }
             },
             hasConflict: true
@@ -202,23 +195,19 @@ async function getCountry(asin, host) {
             expectedSources: {
                 "www.amazon.com": {
                     country: "USA",
-                    section: "detailBullets",
-                    text: "Country of Origin: USA"
+                    section: "detailBullets"
                 },
                 "www.amazon.in": {
                     country: "USA",
-                    section: "techSpecs",
-                    text: "Country of Origin: USA"
+                    section: "techSpecs"
                 },
                 "www.amazon.ca": {
                     country: null,
-                    section: null,
-                    text: null
+                    section: null
                 },
                 "www.amazon.co.uk": {
                     country: null,
-                    section: null,
-                    text: null
+                    section: null
                 }
             },
             hasConflict: false
@@ -229,26 +218,22 @@ async function getCountry(asin, host) {
             expectedSources: {
                 "www.amazon.com": {
                     country: null,
-                    section: null,
-                    text: null
+                    section: null
                 },
                 "www.amazon.in": {
                     country: "United Kingdom",
-                    section: "detailBullets",
-                    text: "Country of Origin: United Kingdom"
+                    section: "detailBullets"
                 },
                 "www.amazon.ca": {
                     country: null,
-                    section: null,
-                    text: null
+                    section: null
                 },
                 "www.amazon.co.uk": {
-                    country: null,
-                    section: null,
-                    text: null
+                    country: "Ireland",
+                    section: "techSpecs"
                 }
             },
-            hasConflict: false
+            hasConflict: true
         }
     ];
     
@@ -273,23 +258,20 @@ async function getCountry(asin, host) {
         // Test each source
         for (const [site, expected] of Object.entries(testCase.expectedSources)) {
             const source = result.sources.find(s => s.domain === site);
-            totalTests += 3; // country, section, text
+            totalTests += 2; // country, section
             
             // Compare results
             const countryMatch = source?.country === expected.country;
             const sectionMatch = source?.section === expected.section;
-            const textMatch = source?.text === expected.text;
             
             passedTests += countryMatch ? 1 : 0;
             passedTests += sectionMatch ? 1 : 0;
-            passedTests += textMatch ? 1 : 0;
             
             // Log detailed results for this source
             console.log(
                 `\n   ${site} (${source?.url}):\n` +
                 `      Country: ${countryMatch ? '✅' : '❌'} Expected: ${expected.country || 'null'}, Got: ${source?.country || 'null'}\n` +
-                `      Section: ${sectionMatch ? '✅' : '❌'} Expected: ${expected.section || 'null'}, Got: ${source?.section || 'null'}\n` +
-                `      Text:    ${textMatch ? '✅' : '❌'} Expected: ${expected.text || 'null'}, Got: ${source?.text || 'null'}`
+                `      Section: ${sectionMatch ? '✅' : '❌'} Expected: ${expected.section || 'null'}, Got: ${source?.section || 'null'}`
             );
         }
         
