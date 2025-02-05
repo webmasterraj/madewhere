@@ -36,7 +36,7 @@ const pageSections = [
 ];
 
 async function checkSite(asin, site) {
-    console.log(`Checking ${site}...`);
+    // console.log(`Checking ${site}...`);
 	try {
         const pageHtml = await fetch(`https://${site}/dp/${asin}`).then(r => r.text());
         
@@ -52,7 +52,7 @@ async function checkSite(asin, site) {
         const countryOfOriginRegex = /[Oo]f [Oo]rigin/;
         
         for (const {name, regex, extractFn} of pageSections) {
-            console.log(`Checking ${name}...`);
+            // console.log(`Checking ${name}...`);
 			const html = pageHtml.match(regex)?.at(0);
             if (html && countryOfOriginRegex.test(html)) {
                 const extractedText = extractFn(html);
@@ -76,7 +76,7 @@ async function checkSite(asin, site) {
             }
         }
 
-        console.log(`Finished checking ${site}: ${JSON.stringify(sourceInfo)}`);
+        // console.log(`Finished checking ${site}: ${JSON.stringify(sourceInfo)}`);
 		return sourceInfo;
 
     } catch (error) {
@@ -136,7 +136,7 @@ function handleCountryConflict(result, host) {
 }
 
 async function getCountry(asin, host) {
-    console.log(`Getting country for ${asin}...`);
+    // console.log(`Getting country for ${asin}...`);
 	
 	// Check storage first
     let savedData = await CSGet(asin);

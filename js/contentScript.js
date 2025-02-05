@@ -3,6 +3,18 @@ console.log("Made in Where Injected.");
 const notFoundImg = chrome.runtime.getURL("assets/notfound.png");
 const loadingImg = chrome.runtime.getURL("assets/spinner.gif");
 
+function updateTooltip(flagElement, countryInfo) {
+    let tooltipText = `Country of origin: ${countryInfo?.country?.name || "Not found"}`;
+    if (countryInfo?.hasConflict) {
+        tooltipText += '\n⚠️ Sources disagree';
+        flagElement.find('.azWarning').show();
+    } else {
+        flagElement.find('.azWarning').hide();
+    }
+    tooltipText += '\nClick for details';
+    flagElement.find('.azTooltip').text(tooltipText);
+}
+
 $(async () => 
 {
     if (window.location.href.includes("/dp/")) // Product Page
@@ -25,17 +37,7 @@ $(async () =>
 
             // Set flag
             $(`.azflag`).attr("src", countryInfo?.country?.flag || notFoundImg);
-            
-            // Set tooltip text
-            let tooltipText = `Country of origin: ${countryInfo?.country?.name || "Not found"}`;
-            if (countryInfo?.hasConflict) {
-                tooltipText += '\n⚠️ Sources disagree';
-                $('.azWarning').show();
-            } else {
-                $('.azWarning').hide();
-            }
-            tooltipText += '\nClick for details';
-            $(`.azTooltip`).text(tooltipText);
+            updateTooltip($(`.azflag`), countryInfo);
         }
     }
     else // Listing Page
@@ -148,14 +150,10 @@ $(async () =>
 
                     for (const countryInfo of countryInfos) 
                     {
-                        $(`.azflag[data-asin="${countryInfo.asin}"] img`).attr("src", countryInfo?.country?.flag || notFoundImg);
-                        $(`.azflag[data-asin="${countryInfo.asin}"] .azTooltip`).text(`Country of origin: ${countryInfo?.country?.name || "Not found"}`);
-                        if (countryInfo?.hasConflict) {
-                            $(`.azflag[data-asin="${countryInfo.asin}"] .azWarning`).show();
-                        } else {
-                            $(`.azflag[data-asin="${countryInfo.asin}"] .azWarning`).hide();
-                        }
-                        $(`.azflag[data-asin="${countryInfo.asin}"]`).addClass("azLoaded");
+                        const flagElement = $(`.azflag[data-asin="${countryInfo.asin}"]`);
+                        flagElement.find('img').attr("src", countryInfo?.country?.flag || notFoundImg);
+                        updateTooltip(flagElement, countryInfo);
+                        flagElement.addClass("azLoaded");
                     }
                 }
                 catch (error)
