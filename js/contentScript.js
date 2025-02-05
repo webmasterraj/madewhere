@@ -17,13 +17,25 @@ $(async () =>
                 <div class="azflag">
                     <span class="azTooltip">Country of origin: Searching</span>
                     <img class="azflag" src="${loadingImg}" />
+                    <span class="azWarning" style="display: none;">⚠️</span>
                 </div>
             `);
 
             let countryInfo = (await chrome.runtime.sendMessage({ action: "getCountryInfos", asins: [productAsin], host:window.location.host }))?.at(0);
 
+            // Set flag
             $(`.azflag`).attr("src", countryInfo?.country?.flag || notFoundImg);
-            $(`.azTooltip`).text(`Country of origin: ${countryInfo?.country?.name || "Not found"}`);
+            
+            // Set tooltip text
+            let tooltipText = `Country of origin: ${countryInfo?.country?.name || "Not found"}`;
+            if (countryInfo?.hasConflict) {
+                tooltipText += '\n⚠️ Sources disagree';
+                $('.azWarning').show();
+            } else {
+                $('.azWarning').hide();
+            }
+            tooltipText += '\nClick for details';
+            $(`.azTooltip`).text(tooltipText);
         }
     }
     else // Listing Page
@@ -78,6 +90,7 @@ $(async () =>
                             <div class="azflag" style="display: block;" data-asin="${ProductElem.attr("data-asin")}">
                                 <span class="azTooltip">Country of origin: Searching</span>
                                 <img src="${loadingImg}" />
+                                <span class="azWarning" style="display: none;">⚠️</span>
                             </div>
                         `);
     
@@ -89,6 +102,7 @@ $(async () =>
                             <div class="azflag"  style="margin-right: 2px; margin-top: -5px;" data-asin="${ProductElem.attr("data-asin")}">
                                 <span class="azTooltip">Country of origin: Searching</span>
                                 <img src="${loadingImg}" />
+                                <span class="azWarning" style="display: none;">⚠️</span>
                             </div>
                         `);
                     }
@@ -98,6 +112,7 @@ $(async () =>
                             <div class="azflag" style="display: block;" data-asin="${ProductElem.attr("data-asin")}">
                                 <span class="azTooltip">Country of origin: Searching</span>
                                 <img src="${loadingImg}" />
+                                <span class="azWarning" style="display: none;">⚠️</span>
                             </div>
                         `);
     
@@ -109,6 +124,7 @@ $(async () =>
                             <div class="azflag" style="display: block;" data-asin="${ProductElem.attr("data-asin")}">
                                 <span class="azTooltip">Country of origin: Searching</span>
                                 <img src="${loadingImg}" />
+                                <span class="azWarning" style="display: none;">⚠️</span>
                             </div>
                         `);
                     }
@@ -134,6 +150,11 @@ $(async () =>
                     {
                         $(`.azflag[data-asin="${countryInfo.asin}"] img`).attr("src", countryInfo?.country?.flag || notFoundImg);
                         $(`.azflag[data-asin="${countryInfo.asin}"] .azTooltip`).text(`Country of origin: ${countryInfo?.country?.name || "Not found"}`);
+                        if (countryInfo?.hasConflict) {
+                            $(`.azflag[data-asin="${countryInfo.asin}"] .azWarning`).show();
+                        } else {
+                            $(`.azflag[data-asin="${countryInfo.asin}"] .azWarning`).hide();
+                        }
                         $(`.azflag[data-asin="${countryInfo.asin}"]`).addClass("azLoaded");
                     }
                 }

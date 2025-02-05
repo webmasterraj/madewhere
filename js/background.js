@@ -36,7 +36,8 @@ const pageSections = [
 ];
 
 async function checkSite(asin, site) {
-    try {
+    console.log(`Checking ${site}...`);
+	try {
         const pageHtml = await fetch(`https://${site}/dp/${asin}`).then(r => r.text());
         
         // Initialize source info
@@ -51,7 +52,8 @@ async function checkSite(asin, site) {
         const countryOfOriginRegex = /[Oo]f [Oo]rigin/;
         
         for (const {name, regex, extractFn} of pageSections) {
-            const html = pageHtml.match(regex)?.at(0);
+            console.log(`Checking ${name}...`);
+			const html = pageHtml.match(regex)?.at(0);
             if (html && countryOfOriginRegex.test(html)) {
                 const extractedText = extractFn(html);
                 if (extractedText) {
@@ -74,7 +76,8 @@ async function checkSite(asin, site) {
             }
         }
 
-        return sourceInfo;
+        console.log(`Finished checking ${site}: ${JSON.stringify(sourceInfo)}`);
+		return sourceInfo;
 
     } catch (error) {
         console.error(`Error fetching ${site}:`, error);
@@ -133,7 +136,9 @@ function handleCountryConflict(result, host) {
 }
 
 async function getCountry(asin, host) {
-    // Check storage first
+    console.log(`Getting country for ${asin}...`);
+	
+	// Check storage first
     let savedData = await CSGet(asin);
     if (savedData?.sources?.length > 0) {
         return savedData;
@@ -160,136 +165,14 @@ async function getCountry(asin, host) {
     return result;
 }
 
-// For testing to see if the code can get country of origin from different sections of each website
-(async () => {
-    console.log("🧪 Starting Country Detection Tests");
-    console.log("==================================");
-    
-    const testCases = [
-        {
-            asin: "B081H3Y5NW",
-            description: "Product showing different countries (testing conflict resolution)",
-            expectedSources: {
-                "www.amazon.com": {
-                    country: "China",
-                    section: "techSpecs"
-                },
-                "www.amazon.in": {
-                    country: null,
-                    section: null
-                },
-                "www.amazon.ca": {
-                    country: "Vietnam",
-                    section: "detailBullets"
-                },
-                "www.amazon.co.uk": {
-                    country: null,
-                    section: null
-                }
-            },
-            hasConflict: true
-        },
-        {
-            asin: "B01B0ADMP8",
-            description: "Product with country in detailBullets",
-            expectedSources: {
-                "www.amazon.com": {
-                    country: "USA",
-                    section: "detailBullets"
-                },
-                "www.amazon.in": {
-                    country: "USA",
-                    section: "techSpecs"
-                },
-                "www.amazon.ca": {
-                    country: null,
-                    section: null
-                },
-                "www.amazon.co.uk": {
-                    country: null,
-                    section: null
-                }
-            },
-            hasConflict: false
-        },
-        {
-            asin: "B007RM3010",
-            description: "Product with country in detailBullets on .in",
-            expectedSources: {
-                "www.amazon.com": {
-                    country: null,
-                    section: null
-                },
-                "www.amazon.in": {
-                    country: "United Kingdom",
-                    section: "detailBullets"
-                },
-                "www.amazon.ca": {
-                    country: null,
-                    section: null
-                },
-                "www.amazon.co.uk": {
-                    country: "Ireland",
-                    section: "techSpecs"
-                }
-            },
-            hasConflict: true
-        }
-    ];
-    
-    let totalTests = 0;
-    let passedTests = 0;
-    
-    for (const testCase of testCases) {
-        console.log(`\n📦 Testing ${testCase.asin}: ${testCase.description}`);
-        
-        // Clear storage for this ASIN
-        await CSRemove(testCase.asin);
-        
-        // Run test once - it will check all sources
-        const result = await getCountry(testCase.asin);
-        
-        // Test conflict flag
-        const conflictMatch = result.hasConflict === testCase.hasConflict;
-        totalTests++;
-        passedTests += conflictMatch ? 1 : 0;
-        console.log(`Conflict Flag: ${conflictMatch ? '✅' : '❌'} Expected: ${testCase.hasConflict}, Got: ${result.hasConflict}`);
-        
-        // Test each source
-        for (const [site, expected] of Object.entries(testCase.expectedSources)) {
-            const source = result.sources.find(s => s.domain === site);
-            totalTests += 2; // country, section
-            
-            // Compare results
-            const countryMatch = source?.country === expected.country;
-            const sectionMatch = source?.section === expected.section;
-            
-            passedTests += countryMatch ? 1 : 0;
-            passedTests += sectionMatch ? 1 : 0;
-            
-            // Log detailed results for this source
-            console.log(
-                `\n   ${site} (${source?.url}):\n` +
-                `      Country: ${countryMatch ? '✅' : '❌'} Expected: ${expected.country || 'null'}, Got: ${source?.country || 'null'}\n` +
-                `      Section: ${sectionMatch ? '✅' : '❌'} Expected: ${expected.section || 'null'}, Got: ${source?.section || 'null'}`
-            );
-        }
-        
-        // Log the full result object
-        console.log("\n   Full Result:");
-        console.log("   ", JSON.stringify(result, null, 2).replace(/\n/g, '\n   '));
-    }
-    
-    // Print summary
-    console.log("\n📊 Test Summary");
-    console.log("==============");
-    console.log(`Passed: ${passedTests}/${totalTests} (${Math.round(passedTests/totalTests*100)}%)`);
-})();
-
 const contentScript = {
     id: 'amazonFlags',
     matches: ['https://www.amazon.com/*'],
-    js: ['lib/CStorage.js', 'lib/country.js', 'js/content.js'],
+	js: [
+		"lib/jquery-3.6.0.min.js",
+		"js/contentScript.js"
+	],
+	css:["css/contentScript.css"],
     runAt: 'document_end'
 };
 
@@ -336,3 +219,129 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse)
         chrome.storage.sync.set({ enabled: (request.enabled ?? true) });
     }
 });
+
+// For testing to see if the code can get country of origin from different sections of each website
+// (async () => {
+//     console.log("🧪 Starting Country Detection Tests");
+//     console.log("==================================");
+    
+//     const testCases = [
+//         {
+//             asin: "B081H3Y5NW",
+//             description: "Product showing different countries (testing conflict resolution)",
+//             expectedSources: {
+//                 "www.amazon.com": {
+//                     country: "China",
+//                     section: "techSpecs"
+//                 },
+//                 "www.amazon.in": {
+//                     country: null,
+//                     section: null
+//                 },
+//                 "www.amazon.ca": {
+//                     country: "Vietnam",
+//                     section: "detailBullets"
+//                 },
+//                 "www.amazon.co.uk": {
+//                     country: null,
+//                     section: null
+//                 }
+//             },
+//             hasConflict: true
+//         },
+//         {
+//             asin: "B01B0ADMP8",
+//             description: "Product with country in detailBullets",
+//             expectedSources: {
+//                 "www.amazon.com": {
+//                     country: "USA",
+//                     section: "detailBullets"
+//                 },
+//                 "www.amazon.in": {
+//                     country: "USA",
+//                     section: "techSpecs"
+//                 },
+//                 "www.amazon.ca": {
+//                     country: null,
+//                     section: null
+//                 },
+//                 "www.amazon.co.uk": {
+//                     country: null,
+//                     section: null
+//                 }
+//             },
+//             hasConflict: false
+//         },
+//         {
+//             asin: "B007RM3010",
+//             description: "Product with country in detailBullets on .in",
+//             expectedSources: {
+//                 "www.amazon.com": {
+//                     country: null,
+//                     section: null
+//                 },
+//                 "www.amazon.in": {
+//                     country: "United Kingdom",
+//                     section: "detailBullets"
+//                 },
+//                 "www.amazon.ca": {
+//                     country: null,
+//                     section: null
+//                 },
+//                 "www.amazon.co.uk": {
+//                     country: "Ireland",
+//                     section: "techSpecs"
+//                 }
+//             },
+//             hasConflict: true
+//         }
+//     ];
+    
+//     let totalTests = 0;
+//     let passedTests = 0;
+    
+//     for (const testCase of testCases) {
+//         console.log(`\n📦 Testing ${testCase.asin}: ${testCase.description}`);
+        
+//         // Clear storage for this ASIN
+//         await CSRemove(testCase.asin);
+        
+//         // Run test once - it will check all sources
+//         const result = await getCountry(testCase.asin);
+        
+//         // Test conflict flag
+//         const conflictMatch = result.hasConflict === testCase.hasConflict;
+//         totalTests++;
+//         passedTests += conflictMatch ? 1 : 0;
+//         console.log(`Conflict Flag: ${conflictMatch ? '✅' : '❌'} Expected: ${testCase.hasConflict}, Got: ${result.hasConflict}`);
+        
+//         // Test each source
+//         for (const [site, expected] of Object.entries(testCase.expectedSources)) {
+//             const source = result.sources.find(s => s.domain === site);
+//             totalTests += 2; // country, section
+            
+//             // Compare results
+//             const countryMatch = source?.country === expected.country;
+//             const sectionMatch = source?.section === expected.section;
+            
+//             passedTests += countryMatch ? 1 : 0;
+//             passedTests += sectionMatch ? 1 : 0;
+            
+//             // Log detailed results for this source
+//             console.log(
+//                 `\n   ${site} (${source?.url}):\n` +
+//                 `      Country: ${countryMatch ? '✅' : '❌'} Expected: ${expected.country || 'null'}, Got: ${source?.country || 'null'}\n` +
+//                 `      Section: ${sectionMatch ? '✅' : '❌'} Expected: ${expected.section || 'null'}, Got: ${source?.section || 'null'}`
+//             );
+//         }
+        
+//         // Log the full result object
+//         console.log("\n   Full Result:");
+//         console.log("   ", JSON.stringify(result, null, 2).replace(/\n/g, '\n   '));
+//     }
+    
+//     // Print summary
+//     console.log("\n📊 Test Summary");
+//     console.log("==============");
+//     console.log(`Passed: ${passedTests}/${totalTests} (${Math.round(passedTests/totalTests*100)}%)`);
+// })();

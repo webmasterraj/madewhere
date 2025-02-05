@@ -3,6 +3,16 @@
     text-align: center;
     display: inline-block;
     vertical-align: middle;
+    position: relative;
+}
+
+.azflag .azWarning {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    display: none;
+    filter: drop-shadow(0 0 1px black);
 }
 
 .azflag span.azTooltip {
@@ -11,19 +21,20 @@
     letter-spacing: 1px;
     background: black;
     color: white;
-    padding: 0px 10px;
+    padding: 5px 10px;
     position: absolute;
     box-shadow: black 0 0 10px;
     width: max-content;
     /* top: 50%;
     left: 50%; */
     /* transform: translate(-50%, -50px); */
-    line-height: 32px;
+    line-height: 1.4;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.5s;
-
-    transform: translate(-40%, -35px);
+    white-space: pre-line;
+    transform: translate(-40%, -100%);
+    z-index: 1000;
 }
 
 .azflag:hover span.azTooltip {
