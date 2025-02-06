@@ -63,12 +63,16 @@ async function checkSite(asin, site) {
                         .replace(/&.+;/g, "")
                         .trim();
                     
-                    const country = getCountryFromText(cleanText);
-                    if (country) {
+                    const countryName = getCountryFromText(cleanText);
+                    if (countryName) {
                         sourceInfo = {
                             ...sourceInfo,
                             section: name,
-                            country: country
+                            country: {
+                                name: countryName,
+                                code: getCountryCode(countryName),
+                                flag: getFlagUrl(getCountryCode(countryName))
+                            }
                         };
                         break;
                     }
@@ -125,7 +129,7 @@ function handleCountryConflict(result, host) {
 
         // Set the country from our selected source
         if (selectedSource) {
-            const countryName = selectedSource.country;
+            const countryName = selectedSource.country.name;
             result.country = {
                 name: countryName,
                 code: getCountryCode(countryName),

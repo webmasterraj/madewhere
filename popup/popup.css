@@ -15,13 +15,11 @@ html
 }
 
 body {
-    min-width: 400px;
-    background-color: #222229;
-    color: white;
-    padding: 25px;
-	margin-bottom: 10px;
-	text-align: center;
-	letter-spacing: 1px;
+    width: 350px;
+    padding: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    color: #333;
 }
 
 p {
@@ -99,4 +97,77 @@ input[type="checkbox"]:checked:before {
 	left: 2.2em;
 	color: #89befe;
 	
+}
+
+/* Toggle Switch Styles */
+.toggleCheck {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+/* Details View Styles */
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+#backButton {
+    padding: 5px 10px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#backButton:hover {
+    background: #e0e0e0;
+}
+
+.product-info {
+    margin-bottom: 20px;
+}
+
+.product-title {
+    font-size: 16px;
+    margin: 0 0 8px 0;
+}
+
+.sources-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.source-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.marketplace-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.marketplace-link:hover {
+    text-decoration: underline;
+}
+
+.marketplace-name {
+    font-size: 14px;
+}
+
+.origin-flag {
+    width: 24px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 2px;
 }

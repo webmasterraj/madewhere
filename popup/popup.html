@@ -7,15 +7,42 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <div class="toggleCheck">
-        <span>OFF</span>
-        <input id="EnabledCheck" type="checkbox" />
-        <span>ON</span>
+    <!-- Default View -->
+    <div id="defaultView">
+        <div class="toggleCheck">
+            <span>OFF</span>
+            <input id="EnabledCheck" type="checkbox" />
+            <span>ON</span>
+        </div>
+        <p><strong>Made in Where</strong> shows the country where an Amazon product comes from so you can make an informed purchase.</p>
+        <br>
+        <p>The Country of Origin is displayed as flags on the search results and product pages. Amazon.com in the US does not show Country of Origin, so the extension gathers data from other Amazon country sites where it is available.</p>
     </div>
-    <p><strong>Made in Where</strong> shows the country where an Amazon product comes from so you can make an informed purchase.</p>
-    <br>
-    <p>The Country of Origin is displayed as flags on the search results and product pages. Amazon.com in the US does not show Country of Origin, so the extension gathers data from other Amazon country sites where it is available.</p>
+
+    <!-- Country Details View -->
+    <div id="detailsView" style="display: none;">
+        <div class="header">
+            <button id="backButton">← Back</button>
+            <h2>Product Origin Details</h2>
+        </div>
+        
+        <!-- <div class="product-info">
+            <h3 id="productTitle" class="product-title"></h3>
+        </div>
+ -->
+        <div id="sourcesList" class="sources-list">
+            <!-- Sources will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <template id="sourceTemplate">
+        <div class="source-item">
+            <a class="marketplace-link" target="_blank">
+                <img class="origin-flag" alt="">
+            </a>
+        </div>
+    </template>
  
-    <script src="popup.js"></script>
+    <script type="module" src="popup.js"></script>
 </body>
 </html>

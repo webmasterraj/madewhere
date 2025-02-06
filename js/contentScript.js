@@ -13,6 +13,24 @@ function updateTooltip(flagElement, countryInfo) {
     }
     tooltipText += '\nClick for details';
     flagElement.find('.azTooltip').text(tooltipText);
+
+    // Store the countryInfo data
+    flagElement.data('countryInfo', countryInfo);
+
+    // Add click handler for the flag
+    flagElement.off('click').on('click', async function() {
+        console.log("Clicked flag");
+        const countryInfo = $(this).data('countryInfo');
+        console.log("Stored info:", countryInfo);
+        
+        // Send data to popup
+        console.log("Sending data to popup");
+        chrome.runtime.sendMessage({
+            action: 'showCountryDetails',
+            countryInfo: countryInfo
+        });
+        console.log("Sent data to popup");
+    });
 }
 
 $(async () => 
