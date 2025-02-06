@@ -74,7 +74,6 @@ function createSourceElement(source) {
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'showCountryDetails') {
-        console.log("Showing country details:", request);
         const { sources } = request.countryInfo;
         
         showDetailsView();
