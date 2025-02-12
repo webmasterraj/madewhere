@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Made in Where</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <!-- Country Details View -->
+    <div id="detailsView">
+        <div class="header">
+            <h2>Country of Origin</h2>
+        </div>
+        
+        <!-- <div class="product-info">
+            <h3 id="productTitle" class="product-title"></h3>
+        </div>
+ -->
+        <div id="sourcesList" class="sources-list">
+            <!-- Sources will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <template id="sourceTemplate">
+        <div class="source-item">
+            <a class="marketplace-link">
+                <span class="marketplace-name"></span>
+                <img class="origin-flag" alt="Country flag">
+                <span class="origin-name"></span>
+            </a>
+        </div>
+    </template>
+ 
+    <script type="module" src="details.js"></script>
+</body>
+</html>

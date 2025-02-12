@@ -14,8 +14,7 @@
         "*://*/*"
     ],
     "action": {
-        "default_title": "Made in Where",
-        "default_popup": "popup/popup.html"
+        "default_title": "Made in Where"
     },
     "background": {
         "service_worker": "js/background.js"

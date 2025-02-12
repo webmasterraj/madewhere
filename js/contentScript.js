@@ -18,13 +18,15 @@ function updateTooltip(flagElement, countryInfo) {
     flagElement.data('countryInfo', countryInfo);
 
     // Add click handler for the flag
-    flagElement.off('click').on('click', async function() {
+    flagElement.off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         const countryInfo = $(this).data('countryInfo');
         
-        // Send data to popup
-        chrome.runtime.sendMessage({
-            action: 'showCountryDetails',
-            countryInfo: countryInfo
+        // Store the country info
+        chrome.storage.local.set({ countryInfo }, () => {
+            // Send message to background to open popup
+            chrome.runtime.sendMessage({ action: 'openDetailsPopup'});
         });
     });
 }

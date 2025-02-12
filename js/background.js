@@ -97,19 +97,17 @@ async function checkSite(asin, site) {
 
 function handleCountryConflict(result, host) {
     const foundSources = result.sources.filter(s => s.country);
-    const uniqueCountries = new Set(foundSources.map(s => s.country));
+    console.log('Found sources', foundSources);
+    const uniqueCountries = new Set(foundSources.map(s => s.country.name));
+    console.log('Unique countries', uniqueCountries);
     
     // Set conflict flag if we found different countries
     result.hasConflict = uniqueCountries.size > 1;
+    console.log('Has conflict', result.hasConflict);
     
     if (!result.hasConflict) {
         // No conflict - use the only country we found
-        const countryName = foundSources[0].country;
-        result.country = {
-            name: countryName,
-            code: getCountryCode(countryName),
-            flag: getFlagUrl(getCountryCode(countryName))
-        };
+        result.country = foundSources[0].country;
     } else {
         // We have a conflict - choose based on priority
         let selectedSource;
@@ -129,12 +127,7 @@ function handleCountryConflict(result, host) {
 
         // Set the country from our selected source
         if (selectedSource) {
-            const countryName = selectedSource.country.name;
-            result.country = {
-                name: countryName,
-                code: getCountryCode(countryName),
-                flag: getFlagUrl(getCountryCode(countryName))
-            };
+            result.country = selectedSource.country;
         }
     }
 }
@@ -221,6 +214,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse)
             console.log("Script Disabled.");
         }
         chrome.storage.sync.set({ enabled: (request.enabled ?? true) });
+    }
+    else if (request.action === 'openDetailsPopup') 
+    {
+        chrome.action.setPopup({ popup: 'popup/details.html' }, () => {
+            chrome.action.openPopup();
+        });
     }
 });
 

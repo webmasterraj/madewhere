@@ -144,25 +144,26 @@ input[type="checkbox"]:checked:before {
 }
 
 .source-item {
-    border: 1px solid #e0e0e0;
+    display: grid;
+    grid-template-columns: 120px 30px 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    text-decoration: none;
+    color: inherit;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 5px 0;
     border-radius: 6px;
-    padding: 12px;
 }
 
 .marketplace-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: contents;
     text-decoration: none;
-    color: #007bff;
-}
-
-.marketplace-link:hover {
-    text-decoration: underline;
+    color: inherit;
 }
 
 .marketplace-name {
-    font-size: 14px;
+    font-weight: 500;
 }
 
 .origin-flag {
@@ -170,4 +171,13 @@ input[type="checkbox"]:checked:before {
     height: 16px;
     object-fit: cover;
     border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.origin-name {
+    color: #333;
+}
+
+.marketplace-link:hover {
+    text-decoration: underline;
 }
