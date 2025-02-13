@@ -7,15 +7,17 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <div class="toggleCheck">
-        <span>OFF</span>
-        <input id="EnabledCheck" type="checkbox" />
-        <span>ON</span>
+    <!-- Default View -->
+    <div id="defaultView">
+        <div class="toggleCheck">
+            <span>OFF</span>
+            <input id="EnabledCheck" type="checkbox" />
+            <span>ON</span>
+        </div>
+        <p><strong>Made in Where</strong> shows the country where an Amazon product comes from so you can make an informed purchase.</p>
+        <br>
+        <p>The Country of Origin is displayed as flags on the search results and product pages. Amazon.com in the US does not show Country of Origin, so the extension gathers data from other Amazon country sites where it is available.</p>
     </div>
-    <p><strong>Made in Where</strong> shows the country where an Amazon product comes from so you can make an informed purchase.</p>
-    <br>
-    <p>The Country of Origin is displayed as flags on the search results and product pages. Amazon.com in the US does not show Country of Origin, so the extension gathers data from other Amazon country sites where it is available.</p>
- 
-    <script src="popup.js"></script>
+    <script type="module" src="popup.js"></script>
 </body>
 </html>

@@ -1,7 +1,35 @@
-console.log("Made in Where Injected.");
+console.log("Made  Where available.");
 
 const notFoundImg = chrome.runtime.getURL("assets/notfound.png");
 const loadingImg = chrome.runtime.getURL("assets/spinner.gif");
+
+function updateTooltip(flagElement, countryInfo) {
+    let tooltipText = `Country of origin: ${countryInfo?.country?.name || "Not found"}`;
+    if (countryInfo?.hasConflict) {
+        tooltipText += '\n⚠️ Sources disagree';
+        flagElement.find('.azWarning').show();
+    } else {
+        flagElement.find('.azWarning').hide();
+    }
+    tooltipText += '\nClick for details';
+    flagElement.find('.azTooltip').text(tooltipText);
+
+    // Store the countryInfo data
+    flagElement.data('countryInfo', countryInfo);
+
+    // Add click handler for the flag
+    flagElement.off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const countryInfo = $(this).data('countryInfo');
+        
+        // Store the country info
+        chrome.storage.local.set({ countryInfo }, () => {
+            // Send message to background to open popup
+            chrome.runtime.sendMessage({ action: 'openDetailsPopup'});
+        });
+    });
+}
 
 $(async () => 
 {
@@ -17,13 +45,15 @@ $(async () =>
                 <div class="azflag">
                     <span class="azTooltip">Country of origin: Searching</span>
                     <img class="azflag" src="${loadingImg}" />
+                    <span class="azWarning" style="display: none;">⚠️</span>
                 </div>
             `);
 
             let countryInfo = (await chrome.runtime.sendMessage({ action: "getCountryInfos", asins: [productAsin], host:window.location.host }))?.at(0);
 
+            // Set flag
             $(`.azflag`).attr("src", countryInfo?.country?.flag || notFoundImg);
-            $(`.azTooltip`).text(`Country of origin: ${countryInfo?.country?.name || "Not found"}`);
+            updateTooltip($(`.azflag`), countryInfo);
         }
     }
     else // Listing Page
@@ -31,10 +61,12 @@ $(async () =>
         // Overriding some CSS to make sure the flag is visible
         $("body").append(`
             <style>
-                [data-asin][data-uuid] .sg-row, [data-asin][data-uuid] .s-card-container, [data-asin][data-uuid] .s-overflow-hidden {
-                    overflow: visible !important;
+                .azWarning {
+                    position: absolute;
+                    bottom: -15px;
+                    left: 50%;
+                    transform: translateX(-40%);
                 }
-              
             </style>
         `);
 
@@ -78,6 +110,7 @@ $(async () =>
                             <div class="azflag" style="display: block;" data-asin="${ProductElem.attr("data-asin")}">
                                 <span class="azTooltip">Country of origin: Searching</span>
                                 <img src="${loadingImg}" />
+                                <span class="azWarning" style="display: none;">⚠️</span>
                             </div>
                         `);
     
@@ -89,6 +122,7 @@ $(async () =>
                             <div class="azflag"  style="margin-right: 2px; margin-top: -5px;" data-asin="${ProductElem.attr("data-asin")}">
                                 <span class="azTooltip">Country of origin: Searching</span>
                                 <img src="${loadingImg}" />
+                                <span class="azWarning" style="display: none;">⚠️</span>
                             </div>
                         `);
                     }
@@ -98,6 +132,7 @@ $(async () =>
                             <div class="azflag" style="display: block;" data-asin="${ProductElem.attr("data-asin")}">
                                 <span class="azTooltip">Country of origin: Searching</span>
                                 <img src="${loadingImg}" />
+                                <span class="azWarning" style="display: none;">⚠️</span>
                             </div>
                         `);
     
@@ -109,6 +144,7 @@ $(async () =>
                             <div class="azflag" style="display: block;" data-asin="${ProductElem.attr("data-asin")}">
                                 <span class="azTooltip">Country of origin: Searching</span>
                                 <img src="${loadingImg}" />
+                                <span class="azWarning" style="display: none;">⚠️</span>
                             </div>
                         `);
                     }
@@ -128,13 +164,14 @@ $(async () =>
             {
                 try
                 {
-                    let countryInfos = await chrome.runtime.sendMessage({ action: "getCountryInfos", asins:asins.splice(0,4), host:window.location.host });
+                    let countryInfos = await chrome.runtime.sendMessage({ action: "getCountryInfos", asins:asins.splice(0,12), host:window.location.host });
 
                     for (const countryInfo of countryInfos) 
                     {
-                        $(`.azflag[data-asin="${countryInfo.asin}"] img`).attr("src", countryInfo?.country?.flag || notFoundImg);
-                        $(`.azflag[data-asin="${countryInfo.asin}"] .azTooltip`).text(`Country of origin: ${countryInfo?.country?.name || "Not found"}`);
-                        $(`.azflag[data-asin="${countryInfo.asin}"]`).addClass("azLoaded");
+                        const flagElement = $(`.azflag[data-asin="${countryInfo.asin}"]`);
+                        flagElement.find('img').attr("src", countryInfo?.country?.flag || notFoundImg);
+                        updateTooltip(flagElement, countryInfo);
+                        flagElement.addClass("azLoaded");
                     }
                 }
                 catch (error)
