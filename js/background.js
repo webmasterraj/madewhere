@@ -105,7 +105,11 @@ function handleCountryConflict(result, host) {
     result.hasConflict = uniqueCountries.size > 1;
     console.log('Has conflict', result.hasConflict);
     
-    if (!result.hasConflict) {
+    // When no origin country found, just return the result
+    if (uniqueCountries.size === 0) {
+        return;
+    }
+    else if (!result.hasConflict) {
         // No conflict - use the only country we found
         result.country = foundSources[0].country;
     } else {
