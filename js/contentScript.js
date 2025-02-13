@@ -61,10 +61,12 @@ $(async () =>
         // Overriding some CSS to make sure the flag is visible
         $("body").append(`
             <style>
-                [data-asin][data-uuid] .sg-row, [data-asin][data-uuid] .s-card-container, [data-asin][data-uuid] .s-overflow-hidden {
-                    overflow: visible !important;
+                .azWarning {
+                    position: absolute;
+                    bottom: -15px;
+                    left: 50%;
+                    transform: translateX(-40%);
                 }
-              
             </style>
         `);
 
