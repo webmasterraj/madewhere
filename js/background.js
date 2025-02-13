@@ -158,8 +158,8 @@ async function getCountry(asin, host) {
     // Handle conflicts and set the country
     handleCountryConflict(result, host);
 
-    // Save to storage
-    await CSSet(asin, result);
+    // Save to storage with 15 day TTL
+    await CSSet(asin, result, 15 * 24);
     
     return result;
 }
@@ -321,21 +321,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse)
 //         console.log(`Conflict Flag: ${conflictMatch ? '✅' : '❌'} Expected: ${testCase.hasConflict}, Got: ${result.hasConflict}`);
         
 //         // Test each source
-//         for (const [site, expected] of Object.entries(testCase.expectedSources)) {
-//             const source = result.sources.find(s => s.domain === site);
+//         for (const source of result.sources) {
+//             const expected = testCase.expectedSources[source.domain];
 //             totalTests += 2; // country, section
             
 //             // Compare results
-//             const countryMatch = source?.country === expected.country;
-//             const sectionMatch = source?.section === expected.section;
+//             const countryMatch = source?.country?.name == expected.country;
+//             const sectionMatch = source?.section == expected.section;
             
 //             passedTests += countryMatch ? 1 : 0;
 //             passedTests += sectionMatch ? 1 : 0;
             
 //             // Log detailed results for this source
 //             console.log(
-//                 `\n   ${site} (${source?.url}):\n` +
-//                 `      Country: ${countryMatch ? '✅' : '❌'} Expected: ${expected.country || 'null'}, Got: ${source?.country || 'null'}\n` +
+//                 `\n   ${source?.domain} (${source?.url}):\n` +
+//                 `      Country: ${countryMatch ? '✅' : '❌'} Expected: ${expected.country || 'null'}, Got: ${source?.country?.name || 'null'}\n` +
 //                 `      Section: ${sectionMatch ? '✅' : '❌'} Expected: ${expected.section || 'null'}, Got: ${source?.section || 'null'}`
 //             );
 //         }
