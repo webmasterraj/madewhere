@@ -97,15 +97,12 @@ async function checkSite(asin, site) {
 
 function handleCountryConflict(result, host) {
     const foundSources = result.sources.filter(s => s.country);
-    console.log('Found sources', foundSources);
     const uniqueCountries = new Set(foundSources.map(s => s.country.name));
-    console.log('Unique countries', uniqueCountries);
     
     // Set conflict flag if we found different countries
     result.hasConflict = uniqueCountries.size > 1;
-    console.log('Has conflict', result.hasConflict);
     
-    // When no origin country found, just return the result
+    // When no origin country found, just return the result as is
     if (uniqueCountries.size === 0) {
         return;
     }
@@ -147,6 +144,7 @@ async function getCountry(asin, host) {
 
     // Initialize result structure
     const result = {
+        asin: asin,
         country: undefined,
         sources: [],
         hasConflict: false

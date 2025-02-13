@@ -1,4 +1,4 @@
-console.log("Made in Where Injected.");
+console.log("Made  Where available.");
 
 const notFoundImg = chrome.runtime.getURL("assets/notfound.png");
 const loadingImg = chrome.runtime.getURL("assets/spinner.gif");
@@ -162,7 +162,7 @@ $(async () =>
             {
                 try
                 {
-                    let countryInfos = await chrome.runtime.sendMessage({ action: "getCountryInfos", asins:asins.splice(0,4), host:window.location.host });
+                    let countryInfos = await chrome.runtime.sendMessage({ action: "getCountryInfos", asins:asins.splice(0,12), host:window.location.host });
 
                     for (const countryInfo of countryInfos) 
                     {
