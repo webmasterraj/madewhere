@@ -1,8 +1,13 @@
 importScripts("../lib/CStorage.js");
 importScripts("../lib/country.js");
 
-// sites to check for country
-const amazonSites = ["www.amazon.com", "www.amazon.ca","www.amazon.co.uk", "www.amazon.in"];
+// sites to check for country of origin data
+const amazonSites = [
+    "www.amazon.com",
+    "www.amazon.ca",
+    "www.amazon.co.uk",
+    "www.amazon.in"
+];
 
 // page sections configuration
 const pageSections = [
@@ -166,7 +171,17 @@ async function getCountry(asin, host) {
 
 const contentScript = {
     id: 'amazonFlags',
-    matches: ['https://www.amazon.com/*'],
+    matches: [
+        'https://www.amazon.com/*', 
+        'https://www.amazon.co.uk/*', 
+        'https://www.amazon.in/*', 
+        'https://www.amazon.ca/*',
+        'https://www.amazon.de/*', 
+        'https://www.amazon.co.jp/*', 
+        'https://www.amazon.fr/*', 
+        'https://www.amazon.it/*', 
+        'https://www.amazon.es/*'
+    ],
 	js: [
 		"lib/jquery-3.6.0.min.js",
 		"js/contentScript.js"
