@@ -1,5 +1,7 @@
 # Made Where - Country of Origin for Amazon
 
+[Chrome Store Link](https://chromewebstore.google.com/detail/made-where-country-of-ori/ajjhglddifjgmjilgjlcgafhjbhapebp?hl=en)
+
 A browser extension that shows you the country of origin for products on Amazon.
 
 ![image](https://github.com/user-attachments/assets/166c884a-cce1-43bd-bbe0-d2c40726300d)
@@ -53,3 +55,4 @@ For support or questions, contact: madewherehelp@gmail.com
 - Does not track user behavior
 - Stores all information locally on your device
 - Does not communicate with external servers except Amazon
+
